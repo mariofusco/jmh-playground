@@ -20,6 +20,11 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+/**
+ * jvmArgsAppend = {"-XX:+UnlockDiagnosticVMOptions", "-XX:+PrintInlining", "-XX:-TieredCompilation", "-XX:InlineSmallCode=4000", "-XX:MaxInlineSize=60"}
+ * -rf json -psame=false -pshuffle=true
+ * -prof "async:output=flamegraph;dir=/tmp;libPath=/home/mario/software/async-profiler-2.8.1-linux-x64/build/libasyncProfiler.so"
+ */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @Warmup(iterations = 10, time = 400, timeUnit = TimeUnit.MILLISECONDS)
@@ -27,12 +32,6 @@ import org.openjdk.jmh.annotations.Warmup;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Fork(value = 2)
 public class BranchPrediction {
-
-    /**
-     * jvmArgsAppend = {"-XX:+UnlockDiagnosticVMOptions", "-XX:+PrintInlining", "-XX:-TieredCompilation", "-XX:InlineSmallCode=4000", "-XX:MaxInlineSize=60"}
-     * -rf json -psame=false -pshuffle=true
-     * -prof "async:output=flamegraph;dir=/tmp;libPath=/home/mario/software/async-profiler-2.8.1-linux-x64/build/libasyncProfiler.so"
-     */
 
     private static final Set<String> IMMUTABLE_PSEUDO_HEADERS = Set.of(":path", ":authority", ":method", ":status", ":scheme", ":protocol");
 

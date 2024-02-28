@@ -14,22 +14,30 @@ import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
-@Warmup(iterations = 10, time = 100, timeUnit = TimeUnit.MILLISECONDS)
-@Measurement(iterations = 5, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+@Warmup(iterations = 4, time = 1, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 1, time = 20, timeUnit = TimeUnit.SECONDS)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-@Fork(value = 1, jvmArgsAppend = "-Xmx5M")
+@Fork(value = 1, jvmArgsAppend = {"-Xmx15M", "-XX:SoftRefLRUPolicyMSPerMB=1"})
 public class JacksonParser {
+
+    private byte[] oldGenBuffer;
 
     private JsonFactory jsonFactory = JsonFactory.builder()
             .recyclerPool(JsonRecyclerPools.threadLocalPool())
             .build();
     private String json = "{'a':123,'b':'foobar'}".replace('\'', '"');
+
+    @Setup
+    public void setup() {
+        oldGenBuffer = new byte[8 * 1024 * 1024];
+    }
 
     @Benchmark
     @Threads(8)

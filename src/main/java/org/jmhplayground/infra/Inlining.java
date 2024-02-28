@@ -16,6 +16,9 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+/**
+ * Beware results without inspecting first the inlining decision performed by just-in-time
+ */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @Warmup(iterations = 10, time = 100, timeUnit = TimeUnit.MILLISECONDS)
@@ -23,10 +26,6 @@ import org.openjdk.jmh.annotations.Warmup;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Fork(value = 1, jvmArgsAppend = "-XX:MaxInlineLevel=4")
 public class Inlining {
-
-    /**
-     * Beware results without inspecting first the inlining decision performed by just-in-time
-     */
 
     private static class AsciiString implements CharSequence {
         private final byte[] ascii;

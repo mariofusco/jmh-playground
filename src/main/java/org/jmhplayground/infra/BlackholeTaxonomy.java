@@ -14,6 +14,14 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
+/**
+ * Not all blackholes are made equals!
+ * see https://bugs.openjdk.org/browse/JDK-8259316
+ * JDK-17 introduced compiler assisted blackholes which costs and effects on the code is dramatically different
+ * from software ones.
+ *
+ * java -Djmh.blackhole.autoDetect=false -jar target/benchmark.jar org.jmhplayground.example1.BlackholeTaxonomy.*
+ */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @Warmup(iterations = 10, time = 400, timeUnit = TimeUnit.MILLISECONDS)
@@ -21,15 +29,6 @@ import org.openjdk.jmh.infra.Blackhole;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Fork(2)
 public class BlackholeTaxonomy {
-
-    /**
-     * Not all blackholes are made equals!
-     * see https://bugs.openjdk.org/browse/JDK-8259316
-     * JDK-17 introduced compiler assisted blackholes which costs and effects on the code is dramatically different
-     * from software ones.
-     *
-     * java -Djmh.blackhole.autoDetect=false -jar target/benchmark.jar org.jmhplayground.example1.BlackholeTaxonomy.*
-     */
 
     @Param({"100"})
     private int loopCount;

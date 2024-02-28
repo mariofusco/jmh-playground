@@ -18,6 +18,13 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
+/**
+ * Lessons learned:
+ * 1. Bimorphic and polymorphic calls have a cost
+ * 2. The cost can be negligible or not depending on the amount of other work performed
+ *
+ * see https://wiki.openjdk.org/display/HotSpot/MethodData
+ */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 10, time = 400, timeUnit = TimeUnit.MILLISECONDS)
@@ -25,14 +32,6 @@ import org.openjdk.jmh.infra.Blackhole;
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @Fork(2)
 public class TypeProfilePollution {
-
-    /**
-     * Lessons learned:
-     * 1. Bimorphic and polymorphic calls have a cost
-     * 2. The cost can be negligible or not depending on the amount of other work performed
-     *
-     * see https://wiki.openjdk.org/display/HotSpot/MethodData
-     */
 
     @Param({"0", "10"})
     private int work;
