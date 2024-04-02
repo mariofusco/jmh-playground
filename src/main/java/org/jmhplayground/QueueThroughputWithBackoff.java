@@ -1,4 +1,4 @@
-package org.jmhplayground.infra;
+package org.jmhplayground;
 
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;

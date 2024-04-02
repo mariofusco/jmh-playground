@@ -1,4 +1,4 @@
-package org.jmhplayground.infra;
+package org.jmhplayground;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -35,7 +35,7 @@ import org.openjdk.jmh.infra.Blackhole;
 @Measurement(iterations = 5, time = 200, timeUnit = TimeUnit.MILLISECONDS)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @Fork(2)
-public class CpuScaling {
+public class JMH3_CpuScaling {
 
     @Param({"10"})
     private int work;

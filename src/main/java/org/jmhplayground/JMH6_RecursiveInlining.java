@@ -1,4 +1,4 @@
-package org.jmhplayground.infra;
+package org.jmhplayground;
 
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
@@ -16,17 +16,17 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+/**
+ * Recursion cannot be inlined, but indirect recursion ...
+ */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @Warmup(iterations = 10, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 @Measurement(iterations = 5, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-@Fork(value = 1, jvmArgsAppend = {"-XX:+UnlockDiagnosticVMOptions", "-XX:+PrintInlining", "-XX:MaxInlineLevel=4"})
-public class RecursiveInlining {
-
-    /**
-     *
-     */
+//@Fork(value = 1, jvmArgsAppend = {"-XX:+UnlockDiagnosticVMOptions", "-XX:+PrintInlining", "-XX:MaxInlineLevel=4"})
+@Fork(value = 1, jvmArgsAppend = {"-XX:MaxInlineLevel=4"})
+public class JMH6_RecursiveInlining {
 
     private static class AsciiString implements CharSequence {
         private final byte[] ascii;
@@ -54,7 +54,7 @@ public class RecursiveInlining {
     @Param("100")
     int size;
 
-    @Param({"0","4", "8"})
+    @Param({"0", "1", "2", "3", "4", "5"})
     int callDepth;
 
     AsciiString uppercase;
@@ -72,26 +72,24 @@ public class RecursiveInlining {
     @Benchmark
     @CompilerControl(CompilerControl.Mode.DONT_INLINE)
     public boolean isUppercase() {
-        int level = callDepth;
-        if (level == 0) {
-            return checkUppercase(uppercase);
-        }
-        return isUp1(uppercase, level-1);
+        return isUp1(uppercase, callDepth);
     }
 
     private boolean isUp1(CharSequence in, int level) {
         if (level == 0) {
             return checkUppercase(uppercase);
         }
-        return isUp2(in, level-1);
+        return isUp1(in, level-1);
     }
 
+/*
     private boolean isUp2(CharSequence in, int level) {
         if (level == 0) {
             return checkUppercase(uppercase);
         }
         return isUp1(in, level-1);
     }
+*/
 
     private boolean checkUppercase(CharSequence in) {
         for (int i = 0; i < in.length(); i++) {

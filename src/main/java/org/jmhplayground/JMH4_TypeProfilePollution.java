@@ -1,4 +1,4 @@
-package org.jmhplayground.infra;
+package org.jmhplayground;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +24,8 @@ import org.openjdk.jmh.infra.Blackhole;
  * 2. The cost can be negligible or not depending on the amount of other work performed
  *
  * see https://wiki.openjdk.org/display/HotSpot/MethodData
+ *
+ * use -prof "async:output=flamegraph;dir=/tmp;libPath=/home/mario/software/async-profiler-2.8.1-linux-x64/build/libasyncProfiler.so"
  */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)
@@ -31,12 +33,13 @@ import org.openjdk.jmh.infra.Blackhole;
 @Measurement(iterations = 5, time = 200, timeUnit = TimeUnit.MILLISECONDS)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @Fork(2)
-public class TypeProfilePollution {
+public class JMH4_TypeProfilePollution {
 
     @Param({"0", "10"})
     private int work;
 
-    @Param({"0", "1", "2", "3"})
+//    @Param({"0", "1", "2", "3"})
+    @Param({"0", "3"})
     private int pollutionLevel;
 
     private record Person(String name, int age) { }
@@ -45,24 +48,34 @@ public class TypeProfilePollution {
 
     @Setup
     public void setup(Blackhole bh) {
-        persons = List.of(new Person("Eugenio", 100));
+        persons = List.of(new Person("John", 100));
         if (pollutionLevel == 0) {
             return;
         }
         for (int i = 0; i < 12_000; i++) {
-            bh.consume(anyOf(persons, TypeProfilePollution::isYoung));
+            bh.consume(anyOf(persons, JMH4_TypeProfilePollution::isYoung));
             switch (pollutionLevel) {
                 case 3:
-                    bh.consume(anyOf(persons, TypeProfilePollution::hasLongName));
+                    bh.consume(anyOf(persons, JMH4_TypeProfilePollution::hasLongName));
                 case 2:
-                    bh.consume(anyOf(persons, TypeProfilePollution::isSenior));
+                    bh.consume(anyOf(persons, JMH4_TypeProfilePollution::isSenior));
                 case 1:
-                    bh.consume(anyOf(persons, TypeProfilePollution::hasShortName));
+                    bh.consume(anyOf(persons, JMH4_TypeProfilePollution::hasShortName));
                     break;
                 default:
                     throw new UnsupportedOperationException();
             }
         }
+    }
+
+
+    @Benchmark
+    public boolean anyYoung() {
+        var work = this.work;
+        if (work > 0) {
+            Blackhole.consumeCPU(work);
+        }
+        return anyOf(persons, JMH4_TypeProfilePollution::isYoung);
     }
 
     @CompilerControl(CompilerControl.Mode.DONT_INLINE)
@@ -89,14 +102,5 @@ public class TypeProfilePollution {
 
     private static boolean hasLongName(Person person) {
         return person.name().length() >= 6;
-    }
-
-    @Benchmark
-    public boolean anyYoung() {
-        var work = this.work;
-        if (work > 0) {
-            Blackhole.consumeCPU(work);
-        }
-        return anyOf(persons, TypeProfilePollution::isYoung);
     }
 }

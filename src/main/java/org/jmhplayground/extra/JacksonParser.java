@@ -1,4 +1,4 @@
-package org.jmhplayground.infra;
+package org.jmhplayground.extra;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;

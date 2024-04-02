@@ -1,4 +1,4 @@
-package org.jmhplayground.infra;
+package org.jmhplayground;
 
 import java.util.concurrent.TimeUnit;
 
@@ -20,7 +20,7 @@ import org.openjdk.jmh.infra.Blackhole;
  * JDK-17 introduced compiler assisted blackholes which costs and effects on the code is dramatically different
  * from software ones.
  *
- * java -Djmh.blackhole.autoDetect=false -jar target/benchmark.jar org.jmhplayground.example1.BlackholeTaxonomy.*
+ * java -Djmh.blackhole.autoDetect=false -jar target/benchmark.jar org.jmhplayground.JMH2_BlackholeTaxonomy.*
  */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
@@ -28,7 +28,7 @@ import org.openjdk.jmh.infra.Blackhole;
 @Measurement(iterations = 5, time = 200, timeUnit = TimeUnit.MILLISECONDS)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Fork(2)
-public class BlackholeTaxonomy {
+public class JMH2_BlackholeTaxonomy {
 
     @Param({"100"})
     private int loopCount;

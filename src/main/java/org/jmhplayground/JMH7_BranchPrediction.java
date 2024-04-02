@@ -1,4 +1,4 @@
-package org.jmhplayground.infra;
+package org.jmhplayground;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -31,7 +31,7 @@ import org.openjdk.jmh.annotations.Warmup;
 @Measurement(iterations = 5, time = 200, timeUnit = TimeUnit.MILLISECONDS)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Fork(value = 2)
-public class BranchPrediction {
+public class JMH7_BranchPrediction {
 
     private static final Set<String> IMMUTABLE_PSEUDO_HEADERS = Set.of(":path", ":authority", ":method", ":status", ":scheme", ":protocol");
 
