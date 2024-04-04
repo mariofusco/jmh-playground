@@ -26,6 +26,7 @@ import org.openjdk.jmh.infra.Blackhole;
  * see https://wiki.openjdk.org/display/HotSpot/MethodData
  *
  * use -prof "async:output=flamegraph;dir=/tmp;libPath=/home/mario/software/async-profiler-2.8.1-linux-x64/build/libasyncProfiler.so"
+ * use -prof "async:output=flamegraph;dir=/tmp;libPath=/home/mario/software/async-profiler-3.0-linux-x64/lib/libasyncProfiler.so"
  */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)

@@ -18,6 +18,8 @@ import org.openjdk.jmh.annotations.Warmup;
 
 /**
  * Recursion cannot be inlined, but indirect recursion ...
+ *
+ * use -prof "async:output=flamegraph;dir=/tmp;libPath=/home/mario/software/async-profiler-3.0-linux-x64/lib/libasyncProfiler.so;rawCommand=cstack=vm"
  */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
@@ -25,7 +27,7 @@ import org.openjdk.jmh.annotations.Warmup;
 @Measurement(iterations = 5, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 //@Fork(value = 1, jvmArgsAppend = {"-XX:+UnlockDiagnosticVMOptions", "-XX:+PrintInlining", "-XX:MaxInlineLevel=4"})
-@Fork(value = 1, jvmArgsAppend = {"-XX:MaxInlineLevel=4"})
+@Fork(value = 1)
 public class JMH6_RecursiveInlining {
 
     private static class AsciiString implements CharSequence {
@@ -54,7 +56,7 @@ public class JMH6_RecursiveInlining {
     @Param("100")
     int size;
 
-    @Param({"0", "1", "2", "3", "4", "5"})
+    @Param({"12"})
     int callDepth;
 
     AsciiString uppercase;
