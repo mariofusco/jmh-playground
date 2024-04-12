@@ -1,4 +1,4 @@
-package org.jmhplayground;
+package org.jmhplayground.jmh2;
 
 import java.util.concurrent.TimeUnit;
 
@@ -15,12 +15,15 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
 /**
+ * Infrastructural costs can have a relevant impact on benchmark outcomes ... but this is improving
+ *
  * Not all blackholes are made equals!
  * see https://bugs.openjdk.org/browse/JDK-8259316
  * JDK-17 introduced compiler assisted blackholes which costs and effects on the code is dramatically different
  * from software ones.
  *
- * java -Djmh.blackhole.autoDetect=false -jar target/benchmark.jar org.jmhplayground.JMH2_BlackholeTaxonomy.*
+ * Run with
+ * java -Djmh.blackhole.autoDetect=false -jar target/benchmark.jar org.jmhplayground.jmh2.BlackholeTaxonomy.*
  */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
@@ -28,7 +31,7 @@ import org.openjdk.jmh.infra.Blackhole;
 @Measurement(iterations = 5, time = 200, timeUnit = TimeUnit.MILLISECONDS)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Fork(2)
-public class JMH2_BlackholeTaxonomy {
+public class BlackholeTaxonomy {
 
     @Param({"100"})
     private int loopCount;

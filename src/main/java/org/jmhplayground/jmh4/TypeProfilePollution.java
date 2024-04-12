@@ -1,4 +1,4 @@
-package org.jmhplayground;
+package org.jmhplayground.jmh4;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -25,8 +25,9 @@ import org.openjdk.jmh.infra.Blackhole;
  *
  * see https://wiki.openjdk.org/display/HotSpot/MethodData
  *
- * use -prof "async:output=flamegraph;dir=/tmp;libPath=/home/mario/software/async-profiler-2.8.1-linux-x64/build/libasyncProfiler.so"
- * use -prof "async:output=flamegraph;dir=/tmp;libPath=/home/mario/software/async-profiler-3.0-linux-x64/lib/libasyncProfiler.so"
+ * Run with
+ * -prof "async:output=flamegraph;dir=/tmp;libPath=/home/mario/software/async-profiler-2.8.1-linux-x64/build/libasyncProfiler.so"
+ * -prof "async:output=flamegraph;dir=/tmp;libPath=/home/mario/software/async-profiler-3.0-linux-x64/lib/libasyncProfiler.so"
  */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)
@@ -34,7 +35,7 @@ import org.openjdk.jmh.infra.Blackhole;
 @Measurement(iterations = 5, time = 200, timeUnit = TimeUnit.MILLISECONDS)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @Fork(2)
-public class JMH4_TypeProfilePollution {
+public class TypeProfilePollution {
 
     @Param({"0", "10"})
     private int work;
@@ -54,14 +55,14 @@ public class JMH4_TypeProfilePollution {
             return;
         }
         for (int i = 0; i < 12_000; i++) {
-            bh.consume(anyOf(persons, JMH4_TypeProfilePollution::isYoung));
+            bh.consume(anyOf(persons, TypeProfilePollution::isYoung));
             switch (pollutionLevel) {
                 case 3:
-                    bh.consume(anyOf(persons, JMH4_TypeProfilePollution::hasLongName));
+                    bh.consume(anyOf(persons, TypeProfilePollution::hasLongName));
                 case 2:
-                    bh.consume(anyOf(persons, JMH4_TypeProfilePollution::isSenior));
+                    bh.consume(anyOf(persons, TypeProfilePollution::isSenior));
                 case 1:
-                    bh.consume(anyOf(persons, JMH4_TypeProfilePollution::hasShortName));
+                    bh.consume(anyOf(persons, TypeProfilePollution::hasShortName));
                     break;
                 default:
                     throw new UnsupportedOperationException();
@@ -76,9 +77,13 @@ public class JMH4_TypeProfilePollution {
         if (work > 0) {
             Blackhole.consumeCPU(work);
         }
-        return anyOf(persons, JMH4_TypeProfilePollution::isYoung);
+        return anyOf(persons, TypeProfilePollution::isYoung);
     }
 
+    /**
+     * Just-in-time remembers the receiver for virtual calls: sometimes the jit can further refine the arity
+     * of a virtual call making
+     */
     @CompilerControl(CompilerControl.Mode.DONT_INLINE)
     private static boolean anyOf(List<Person> persons, Predicate<Person> predicate) {
         for (Person person : persons) {

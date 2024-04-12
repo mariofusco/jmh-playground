@@ -1,4 +1,4 @@
-package org.jmhplayground;
+package org.jmhplayground.jmh3;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -21,13 +21,14 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
 /**
- * This benchmarks shows 2 concepts about resources:
- * - CPU resources are not infinite
- * - CPU resources can be shared
+ * This benchmark shows the effect of running a benchmark in a noisy environment.
  *
  * In order to properly run experiments it's important to reduce at minimum the effects of the OS scheduler decisions
  * and governor. Such machine should have fixed or known frequencies under known conditions and the experiments should
  * try to not overcommit over its existing resources, unless it is the purpose of the experiment itself.
+ *
+ * Run with
+ * -prof perf
  */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)
@@ -35,12 +36,12 @@ import org.openjdk.jmh.infra.Blackhole;
 @Measurement(iterations = 5, time = 200, timeUnit = TimeUnit.MILLISECONDS)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @Fork(2)
-public class JMH3_CpuScaling {
+public class NoisyEnvironment {
 
     @Param({"10"})
     private int work;
 
-    @Param({"0", "3"})
+    @Param({"0", "3", "4"})
     private int noisyNeighbors;
 
     private ExecutorService neighborService;
@@ -57,7 +58,7 @@ public class JMH3_CpuScaling {
                 neighborService.submit(() -> {
                     allStarted.countDown();
                     while (!shutdown) {
-                        Blackhole.consumeCPU(1);
+                        Blackhole.consumeCPU(work);
                     }
                 });
             }
@@ -76,20 +77,7 @@ public class JMH3_CpuScaling {
     }
 
     @Benchmark
-    @Threads(1)
-    public void consumeCpu1() {
-        Blackhole.consumeCPU(work);
-    }
-
-    @Benchmark
-    @Threads(8)
-    public void consumeCpu8() {
-        Blackhole.consumeCPU(work);
-    }
-
-    @Benchmark
-    @Threads(100)
-    public void consumeCpu100() {
+    public void consumeCpu() {
         Blackhole.consumeCPU(work);
     }
 }

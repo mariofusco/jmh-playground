@@ -1,4 +1,4 @@
-package org.jmhplayground;
+package org.jmhplayground.jmh6;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -23,7 +23,7 @@ import org.openjdk.jmh.annotations.Warmup;
 /**
  * jvmArgsAppend = {"-XX:+UnlockDiagnosticVMOptions", "-XX:+PrintInlining", "-XX:-TieredCompilation", "-XX:InlineSmallCode=4000", "-XX:MaxInlineSize=60"}
  * -rf json -psame=false -pshuffle=true
- * -prof "async:output=flamegraph;dir=/tmp;libPath=/home/mario/software/async-profiler-2.8.1-linux-x64/build/libasyncProfiler.so"
+ * -prof "async:output=flamegraph;dir=/tmp;libPath=/home/mario/software/async-profiler-3.0-linux-x64/lib/libasyncProfiler.so"
  */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
@@ -31,7 +31,7 @@ import org.openjdk.jmh.annotations.Warmup;
 @Measurement(iterations = 5, time = 200, timeUnit = TimeUnit.MILLISECONDS)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Fork(value = 2)
-public class JMH7_BranchPrediction {
+public class BranchPrediction {
 
     private static final Set<String> IMMUTABLE_PSEUDO_HEADERS = Set.of(":path", ":authority", ":method", ":status", ":scheme", ":protocol");
 

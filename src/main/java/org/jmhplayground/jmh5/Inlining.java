@@ -1,4 +1,4 @@
-package org.jmhplayground;
+package org.jmhplayground.jmh5;
 
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +25,7 @@ import org.openjdk.jmh.annotations.Warmup;
 @Measurement(iterations = 5, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Fork(value = 1, jvmArgsAppend = "-XX:MaxInlineLevel=4")
-public class JMH5_Inlining {
+public class Inlining {
 
     private static class AsciiString implements CharSequence {
         private final byte[] ascii;

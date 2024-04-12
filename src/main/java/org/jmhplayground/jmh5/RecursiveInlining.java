@@ -1,4 +1,4 @@
-package org.jmhplayground;
+package org.jmhplayground.jmh5;
 
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
@@ -19,7 +19,8 @@ import org.openjdk.jmh.annotations.Warmup;
 /**
  * Recursion cannot be inlined, but indirect recursion ...
  *
- * use -prof "async:output=flamegraph;dir=/tmp;libPath=/home/mario/software/async-profiler-3.0-linux-x64/lib/libasyncProfiler.so;rawCommand=cstack=vm"
+ * Run with
+ * -prof "async:output=flamegraph;dir=/tmp;libPath=/home/mario/software/async-profiler-3.0-linux-x64/lib/libasyncProfiler.so;rawCommand=cstack=vm"
  */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
@@ -28,7 +29,7 @@ import org.openjdk.jmh.annotations.Warmup;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 //@Fork(value = 1, jvmArgsAppend = {"-XX:+UnlockDiagnosticVMOptions", "-XX:+PrintInlining", "-XX:MaxInlineLevel=4"})
 @Fork(value = 1)
-public class JMH6_RecursiveInlining {
+public class RecursiveInlining {
 
     private static class AsciiString implements CharSequence {
         private final byte[] ascii;
