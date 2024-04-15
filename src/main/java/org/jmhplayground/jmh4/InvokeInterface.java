@@ -1,7 +1,6 @@
 package org.jmhplayground.jmh4;
 
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
@@ -20,12 +19,14 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
 /**
- * When call site is polluted virtual calls have a cost also when runtime call is monomorphic (lambda cannot be inlined)
+ * Lessons learned:
+ * 1. Bimorphic and polymorphic calls have a cost
+ * 2. The cost can be negligible or not depending on the amount of other work performed
  *
- * see https://wiki.openjdk.org/display/HotSpot/MethodData
+ * see https://blogs.oracle.com/javamagazine/post/mastering-the-mechanics-of-java-method-invocation
  *
  * Run with
- * -prof "async:output=flamegraph;dir=/tmp;libPath=/home/mario/software/async-profiler-3.0-linux-x64/lib/libasyncProfiler.so"
+ * -prof "async:output=flamegraph;dir=/tmp;libPath=/home/mario/software/async-profiler-3.0-linux-x64/lib/libasyncProfiler.so;rawCommand=features=vtable"
  */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)
@@ -33,62 +34,53 @@ import org.openjdk.jmh.infra.Blackhole;
 @Measurement(iterations = 5, time = 200, timeUnit = TimeUnit.MILLISECONDS)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @Fork(2)
-public class TypeProfilePollution {
+public class InvokeInterface {
+
+    //    @Param({"0", "1", "2", "3"})
+    @Param({"0", "3"})
+    private int pollutionLevel;
 
     @Param({"0", "10"})
     private int job;
-
-//    @Param({"0", "1", "2", "3"})
-    @Param({"0", "3"})
-    private int pollutionLevel;
 
     private record Person(String name, int age) { }
 
     private List<Person> persons;
 
+    private Predicate<Person>[] predicates;
+
     @Setup
-    public void setup(Blackhole bh) {
+    public void setup() {
         persons = List.of(new Person("John", 100));
-        if (pollutionLevel == 0) {
-            return;
-        }
 
-        Predicate<Person> isYoung = TypeProfilePollution::isYoung;
-        Predicate<Person> hasLongName = TypeProfilePollution::hasLongName;
-        Predicate<Person> isSenior = TypeProfilePollution::isSenior;
-        Predicate<Person> hasShortName = TypeProfilePollution::hasShortName;
-
-        Set predicates = Set.of(isYoung.getClass(), hasLongName.getClass(), isSenior.getClass(), hasShortName.getClass());
-        if (predicates.size() != 4) {
-            System.out.println(predicates.size());
-            System.exit(1);
-        }
-
-
-        for (int i = 0; i < 12_000; i++) {
-            bh.consume(anyOf(persons, TypeProfilePollution::isYoung));
-            switch (pollutionLevel) {
-                case 3:
-                    bh.consume(anyOf(persons, TypeProfilePollution::hasLongName));
-                case 2:
-                    bh.consume(anyOf(persons, TypeProfilePollution::isSenior));
-                case 1:
-                    bh.consume(anyOf(persons, TypeProfilePollution::hasShortName));
-                    break;
-                default:
-                    throw new UnsupportedOperationException();
-            }
+        predicates = new Predicate[pollutionLevel+1];
+        switch (pollutionLevel) {
+            case 3:
+                predicates[3] = InvokeInterface::hasLongName;
+            case 2:
+                predicates[2] = InvokeInterface::isSenior;
+            case 1:
+                predicates[1] = InvokeInterface::hasShortName;
+            case 0:
+                predicates[0] = InvokeInterface::isYoung;
+                break;
+            default:
+                throw new UnsupportedOperationException();
         }
     }
 
 
     @Benchmark
-    public boolean anyYoung() {
+    public void testPredicate(Blackhole bh) {
         var work = this.job;
-        if (work > 0) {
-            Blackhole.consumeCPU(work);
+        int pos = 0;
+        for (int i = 0; i < 12; i++) {
+            if (work > 0) {
+                Blackhole.consumeCPU(work);
+            }
+            bh.consume(anyOf(persons, predicates[pos]));
+            pos = pos == pollutionLevel ? 0 : pos+1;
         }
-        return anyOf(persons, TypeProfilePollution::isYoung);
     }
 
     /**

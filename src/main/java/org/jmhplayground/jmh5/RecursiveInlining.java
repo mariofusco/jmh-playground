@@ -27,32 +27,8 @@ import org.openjdk.jmh.annotations.Warmup;
 @Warmup(iterations = 10, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 @Measurement(iterations = 5, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-//@Fork(value = 1, jvmArgsAppend = {"-XX:+UnlockDiagnosticVMOptions", "-XX:+PrintInlining", "-XX:MaxInlineLevel=4"})
-@Fork(value = 1)
+@Fork(2)
 public class RecursiveInlining {
-
-    private static class AsciiString implements CharSequence {
-        private final byte[] ascii;
-
-        private AsciiString(byte[] ascii) {
-            this.ascii = ascii;
-        }
-
-        @Override
-        public int length() {
-            return ascii.length;
-        }
-
-        @Override
-        public char charAt(int index) {
-            return (char) ascii[index];
-        }
-
-        @Override
-        public CharSequence subSequence(int start, int end) {
-            throw new UnsupportedOperationException();
-        }
-    }
 
     @Param("100")
     int size;
@@ -104,5 +80,26 @@ public class RecursiveInlining {
         return true;
     }
 
+    private static class AsciiString implements CharSequence {
+        private final byte[] ascii;
 
+        private AsciiString(byte[] ascii) {
+            this.ascii = ascii;
+        }
+
+        @Override
+        public int length() {
+            return ascii.length;
+        }
+
+        @Override
+        public char charAt(int index) {
+            return (char) ascii[index];
+        }
+
+        @Override
+        public CharSequence subSequence(int start, int end) {
+            throw new UnsupportedOperationException();
+        }
+    }
 }

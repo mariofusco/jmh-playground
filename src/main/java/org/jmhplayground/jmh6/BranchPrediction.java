@@ -22,8 +22,9 @@ import org.openjdk.jmh.annotations.Warmup;
 
 /**
  * jvmArgsAppend = {"-XX:+UnlockDiagnosticVMOptions", "-XX:+PrintInlining", "-XX:-TieredCompilation", "-XX:InlineSmallCode=4000", "-XX:MaxInlineSize=60"}
- * -rf json -psame=false -pshuffle=true
- * -prof "async:output=flamegraph;dir=/tmp;libPath=/home/mario/software/async-profiler-3.0-linux-x64/lib/libasyncProfiler.so"
+ *
+ * Run with
+ * -rf json -psame=false -pshuffle=true -prof perfnorm -prof "async:output=flamegraph;dir=/tmp;libPath=/home/mario/software/async-profiler-3.0-linux-x64/lib/libasyncProfiler.so"
  */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)

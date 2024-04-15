@@ -18,6 +18,9 @@ import org.openjdk.jmh.annotations.Warmup;
 
 /**
  * Beware results without inspecting first the inlining decision performed by just-in-time
+ *
+ * Run with
+ * -prof "async:output=flamegraph;dir=/tmp;libPath=/home/mario/software/async-profiler-3.0-linux-x64/lib/libasyncProfiler.so"
  */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
@@ -26,33 +29,6 @@ import org.openjdk.jmh.annotations.Warmup;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Fork(value = 1, jvmArgsAppend = "-XX:MaxInlineLevel=4")
 public class Inlining {
-
-    private static class AsciiString implements CharSequence {
-        private final byte[] ascii;
-
-        private AsciiString(CharSequence ascii) {
-            this(ascii.toString().getBytes(StandardCharsets.US_ASCII));
-        }
-
-        private AsciiString(byte[] ascii) {
-            this.ascii = ascii;
-        }
-
-        @Override
-        public int length() {
-            return ascii.length;
-        }
-
-        @Override
-        public char charAt(int index) {
-            return (char) ascii[index];
-        }
-
-        @Override
-        public CharSequence subSequence(int start, int end) {
-            throw new UnsupportedOperationException();
-        }
-    }
 
     @Param("100")
     int size;
@@ -134,5 +110,30 @@ public class Inlining {
         return true;
     }
 
+    private static class AsciiString implements CharSequence {
+        private final byte[] ascii;
 
+        private AsciiString(CharSequence ascii) {
+            this(ascii.toString().getBytes(StandardCharsets.US_ASCII));
+        }
+
+        private AsciiString(byte[] ascii) {
+            this.ascii = ascii;
+        }
+
+        @Override
+        public int length() {
+            return ascii.length;
+        }
+
+        @Override
+        public char charAt(int index) {
+            return (char) ascii[index];
+        }
+
+        @Override
+        public CharSequence subSequence(int start, int end) {
+            throw new UnsupportedOperationException();
+        }
+    }
 }
