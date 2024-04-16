@@ -41,13 +41,13 @@ public class CpuScaling {
     }
 
     @Benchmark
-    @Threads(8)
+    @Threads(4)
     public void consumeCpu8() {
         Blackhole.consumeCPU(work);
     }
 
     @Benchmark
-    @Threads(100)
+    @Threads(16)
     public void consumeCpu100() {
         Blackhole.consumeCPU(work);
     }

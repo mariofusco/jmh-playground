@@ -53,18 +53,6 @@ public class TypeProfilePollution {
             return;
         }
 
-        Predicate<Person> isYoung = TypeProfilePollution::isYoung;
-        Predicate<Person> hasLongName = TypeProfilePollution::hasLongName;
-        Predicate<Person> isSenior = TypeProfilePollution::isSenior;
-        Predicate<Person> hasShortName = TypeProfilePollution::hasShortName;
-
-        Set predicates = Set.of(isYoung.getClass(), hasLongName.getClass(), isSenior.getClass(), hasShortName.getClass());
-        if (predicates.size() != 4) {
-            System.out.println(predicates.size());
-            System.exit(1);
-        }
-
-
         for (int i = 0; i < 12_000; i++) {
             bh.consume(anyOf(persons, TypeProfilePollution::isYoung));
             switch (pollutionLevel) {

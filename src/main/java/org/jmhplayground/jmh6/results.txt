@@ -1,0 +1,13 @@
+Benchmark                      (same)  (shuffle)  Mode  Cnt   Score   Error  Units
+BranchPrediction.hashSet        false      false  avgt   10  13.507 ± 3.059  ns/op
+BranchPrediction.hashSet        false       true  avgt   10  20.611 ± 1.383  ns/op
+BranchPrediction.hashSet         true      false  avgt   10   6.749 ± 0.488  ns/op
+BranchPrediction.hashSet         true       true  avgt   10   7.170 ± 0.453  ns/op
+BranchPrediction.immutableSet   false      false  avgt   10  17.293 ± 4.089  ns/op
+BranchPrediction.immutableSet   false       true  avgt   10  27.527 ± 2.387  ns/op
+BranchPrediction.immutableSet    true      false  avgt   10   8.000 ± 0.450  ns/op
+BranchPrediction.immutableSet    true       true  avgt   10  16.900 ± 1.127  ns/op
+BranchPrediction.stringSwitch   false      false  avgt   10  10.325 ± 0.492  ns/op
+BranchPrediction.stringSwitch   false       true  avgt   10  27.884 ± 1.508  ns/op
+BranchPrediction.stringSwitch    true      false  avgt   10   6.212 ± 0.499  ns/op
+BranchPrediction.stringSwitch    true       true  avgt   10  26.962 ± 4.088  ns/op
