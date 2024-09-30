@@ -41,7 +41,7 @@ public class NoisyEnvironment {
     @Param({"10"})
     private int work;
 
-    @Param({"0", "3", "4"})
+    @Param({"0", "4", "8"})
     private int noisyNeighbors;
 
     private ExecutorService neighborService;

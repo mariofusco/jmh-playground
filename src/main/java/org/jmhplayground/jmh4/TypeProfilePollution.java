@@ -53,7 +53,7 @@ public class TypeProfilePollution {
             return;
         }
 
-        for (int i = 0; i < 12_000; i++) {
+        for (int i = 0; i < 24_000; i++) {
             bh.consume(anyOf(persons, TypeProfilePollution::isYoung));
             switch (pollutionLevel) {
                 case 3:
