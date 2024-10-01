@@ -1,10 +1,6 @@
 package org.jmhplayground.jmh6;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -45,30 +41,44 @@ public class BranchPrediction {
     private boolean same;
 
     private String[] inputs;
+    // keep it as small as possible to have more and more of them in the L1 cache
+    private byte[] inputsSequence;
+
+    private long nextSequence;
 
     @Setup
     public void setup() {
+        // let's use a power of 2 here for convenience
+        int sequenceSize = 128 * 1024;
+        if (Integer.bitCount(sequenceSize) != 1) {
+            throw new IllegalArgumentException("sequenceSize must be a power of 2");
+        }
+        inputsSequence = new byte[sequenceSize];
+        if (same) {
+            inputs = IMMUTABLE_PSEUDO_HEADERS.toArray(new String[0]);
+        } else {
+            inputs = IMMUTABLE_PSEUDO_HEADERS.stream().map(String::toCharArray).map(String::new).toArray(count -> new String[count]);
+        }
         if (shuffle) {
-            if (same) {
-                inputs = IMMUTABLE_PSEUDO_HEADERS.toArray(new String[0]);
-            } else {
-                inputs = IMMUTABLE_PSEUDO_HEADERS.stream().map(String::toCharArray).map(String::new).toArray(count -> new String[count]);
+            var rnd = new Random(42);
+            for (int i = 0; i < sequenceSize; i++) {
+                inputsSequence[i] = (byte) rnd.nextInt(0, IMMUTABLE_PSEUDO_HEADERS.size());
             }
         } else {
-            inputs = new String[IMMUTABLE_PSEUDO_HEADERS.size()];
-            if (same) {
-                Arrays.fill(inputs, ":protocol");
-            } else {
-                Arrays.fill(inputs, new String(":protocol".toCharArray()));
+            // this should be fairly predictable for the CPU :P
+            for (int i = 0; i < sequenceSize; i++) {
+                inputsSequence[i] = (byte) (i % IMMUTABLE_PSEUDO_HEADERS.size());
             }
         }
     }
 
 
     private String next() {
-        var inputs = this.inputs;
-        return inputs[ThreadLocalRandom.current().nextInt(0, inputs.length)];
-
+        var inputsSequence = this.inputsSequence;
+        int nextSequenceIndex = (int) (nextSequence & (inputsSequence.length - 1));
+        int nextInputIndex = inputsSequence[nextSequenceIndex];
+        nextSequence++;
+        return inputs[nextInputIndex];
     }
 
 
