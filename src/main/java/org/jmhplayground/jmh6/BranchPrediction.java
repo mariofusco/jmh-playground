@@ -17,7 +17,8 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 /**
- * jvmArgsAppend = {"-XX:+UnlockDiagnosticVMOptions", "-XX:+PrintInlining", "-XX:-TieredCompilation", "-XX:InlineSmallCode=4000", "-XX:MaxInlineSize=60"}
+ * HashSet performs better that the ImmutableSet because it has a number of buckets which is a power of 2. This allows to avoid mod operations and reduces branch-misses.
+ * String-switch is the one with the most branch-misses and performs the worst.
  *
  * Run with
  * -rf json -psame=false -pshuffle=true -prof perfnorm -prof "async:output=flamegraph;dir=/tmp;libPath=/home/mario/software/async-profiler-3.0-linux-x64/lib/libasyncProfiler.so"
