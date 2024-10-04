@@ -1,1 +1,0 @@
-java -Djmh.blackhole.autoDetect=false -jar /home/mario/workspace/jmh-playground/target/benchmark.jar org.jmhplayground.jmh2.BlackholeTaxonomy.*
