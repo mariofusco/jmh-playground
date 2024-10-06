@@ -1,0 +1,1 @@
+java -jar target/benchmark.jar -rf json -prof perf org.jmhplayground.jmh3.NoisyEnvironment.*

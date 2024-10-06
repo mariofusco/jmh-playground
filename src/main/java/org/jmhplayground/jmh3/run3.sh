@@ -1,1 +1,0 @@
-java -jar /home/mario/workspace/jmh-playground/target/benchmark.jar -rf json -prof perfnorm org.jmhplayground.jmh3.NoisyEnvironment.*

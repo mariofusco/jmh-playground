@@ -1,0 +1,1 @@
+java -jar target/benchmark.jar org.jmhplayground.jmh1.DeadCodeElimination1.*

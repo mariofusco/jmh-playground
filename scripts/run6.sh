@@ -1,0 +1,1 @@
+java -jar target/benchmark.jar -rf json -psame=false -pshuffle=true -prof perfnorm -prof "async:output=flamegraph;dir=/tmp;libPath=$HOME/async-profiler-3.0-linux-x64/lib/libasyncProfiler.so" org.jmhplayground.jmh6.BranchPrediction.*

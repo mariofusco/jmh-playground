@@ -1,9 +1,12 @@
 package org.jmhplayground.jmh3;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -44,36 +47,26 @@ public class NoisyEnvironment {
     @Param({"0", "4", "8"})
     private int noisyNeighbors;
 
-    private ExecutorService neighborService;
-
-    private volatile boolean shutdown;
+    private List<Process> noisyProcesses;
 
     @Setup
     public void setup() throws InterruptedException {
-        shutdown = false;
-        if (noisyNeighbors > 0) {
-            neighborService = Executors.newFixedThreadPool(noisyNeighbors);
-            CountDownLatch allStarted = new CountDownLatch(noisyNeighbors);
-            for (int i = 0; i < noisyNeighbors; i++) {
-                neighborService.submit(() -> {
-                    allStarted.countDown();
-                    while (!shutdown) {
-                        Blackhole.consumeCPU(work);
-                    }
-                });
-            }
-            allStarted.await();
+        noisyProcesses = IntStream.range(0, noisyNeighbors).mapToObj(i -> startNoisyNeighbor()).toList();
+    }
+
+    // spawn a process executing sha1sum /dev/zero to simulate a noisy neighbor:
+    // it could be achieved as well using a bash script performing a tight loop
+    private static Process startNoisyNeighbor() {
+        try {
+            return new ProcessBuilder("sha1sum", "/dev/zero").start();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @TearDown
     public void tearDown() {
-        if (neighborService == null) {
-            return;
-        }
-        shutdown = true;
-        neighborService.shutdownNow();
-        neighborService.close();
+        noisyProcesses.forEach(Process::destroy);
     }
 
     @Benchmark
